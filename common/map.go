@@ -1,6 +1,14 @@
 package common
 
-import "strconv"
+import (
+	"errors"
+	"sort"
+	"strconv"
+)
+
+var (
+	ErrMapEmpty = errors.New("map empty")
+)
 
 func IntToStringMap(m map[string]int) map[string]string {
 	result := make(map[string]string, len(m))
@@ -66,5 +74,37 @@ func IntMapToIntValues(m map[string]int) []int {
 	for _, v := range m {
 		result = append(result, v)
 	}
+	sort.Sort(sort.Reverse(sort.IntSlice(result)))
 	return result
+}
+
+func FirstIntItem(m map[string]int) (int, error) {
+	for _, v := range m {
+		return v, nil
+	}
+
+	return 0, ErrMapEmpty
+}
+
+func FirstIntItemWithDefault(m map[string]int, def int) int {
+	for _, v := range m {
+		return v
+	}
+	return def
+}
+
+func FirstStringItem(m map[string]string) (string, error) {
+	for _, v := range m {
+		return v, nil
+	}
+
+	return "", ErrMapEmpty
+}
+
+func FirstStringItemWithDefault(m map[string]string, def string) string {
+	for _, v := range m {
+		return v
+	}
+
+	return def
 }

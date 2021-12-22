@@ -260,7 +260,7 @@ func (h *Hardware) getCpuFacts() (map[string]string, error) {
 			var (
 				processorCount          = 0
 				processorCores          = 0
-				processorThreadsPerCore = 0
+				processorThreadsPerCore = 0.0
 			)
 
 			if len(sockets) > 0 {
@@ -270,23 +270,18 @@ func (h *Hardware) getCpuFacts() (map[string]string, error) {
 			}
 			cpuFacts["processor_count"] = strconv.Itoa(processorCount)
 
-			socketValues := common.IntMapToIntValues(sockets)
-			if len(socketValues) > 0 {
-				processorCores = socketValues[0]
-			} else {
-				processorCores = 1
-			}
+			processorCores = common.FirstIntItemWithDefault(sockets, 1)
 			cpuFacts["processor_cores"] = strconv.Itoa(processorCores)
 
 			coreValues := common.IntMapToIntValues(cores)
 
 			if len(coreValues) > 0 {
-				processorThreadsPerCore = coreValues[0] / processorCores
+				processorThreadsPerCore = float64(coreValues[0]) / float64(processorCores)
 			} else {
-				processorThreadsPerCore = 1 / processorCores
+				processorThreadsPerCore = float64(1 / processorCores)
 			}
-			cpuFacts["processor_threads_per_core"] = strconv.Itoa(processorThreadsPerCore)
-			cpuFacts["processor_vcpus"] = strconv.Itoa(processorThreadsPerCore * processorCores * processorCount)
+			cpuFacts["processor_threads_per_core"] = common.Float64ToString(processorThreadsPerCore)
+			cpuFacts["processor_vcpus"] = common.Float64ToString(processorThreadsPerCore * float64(processorCores) * float64(processorCount))
 
 			// if the number of processors available to the module's
 			// thread cannot be determined, the processor count
