@@ -1,7 +1,6 @@
 package hardware
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
 	"runtime"
@@ -271,12 +270,9 @@ func (h *Hardware) getCpuFacts() (map[string]string, error) {
 			}
 			cpuFacts["processor_count"] = strconv.Itoa(processorCount)
 
-			socketValues := common.IntMapToStringValues(sockets)
+			socketValues := common.IntMapToIntValues(sockets)
 			if len(socketValues) > 0 {
-				processorCores, err = strconv.Atoi(socketValues[0])
-				if err != nil {
-					return nil, errors.New("failed to convert socket value to int")
-				}
+				processorCores = socketValues[0]
 			} else {
 				processorCores = 1
 			}
