@@ -1,8 +1,6 @@
 package hardware
 
-// Assert that Hardware implements the interface
-var _ = HardwareInterface(&Hardware{})
+import "github.com/jxsl13/osfacts/interfaces"
 
-type HardwareInterface interface {
-	Populate() (map[string]string, error)
-}
+// Assert that Hardware implements the interface
+var _ interfaces.Collector = &Hardware{}

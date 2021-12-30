@@ -102,3 +102,19 @@ func TestHardware_getUptimeFacts(t *testing.T) {
 		assert.Less(i, int64(60*60*24*365))
 	}
 }
+
+func TestHardware_Populate(t *testing.T) {
+	h := GetTestHardware(t)
+	assert := assert.New(t)
+	facts, err := h.Populate()
+	if err != nil {
+		t.Fatalf("Hardware.Populate() error = %v", err)
+		return
+	}
+
+	assert.NotEmpty(facts["processor_cores"])
+	assert.NotEmpty(facts["processor_vcpus"])
+	assert.NotEmpty(facts["memfree_mb"])
+	assert.NotEmpty(facts["memtotal_mb"])
+	assert.NotEmpty(facts["uptime_seconds"])
+}

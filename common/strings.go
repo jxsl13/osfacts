@@ -10,7 +10,8 @@ var (
 )
 
 func SplitLines(text string) []string {
-	return strings.Split(strings.ReplaceAll(text, "\r\n", "\n"), "\n")
+	lines := strings.Split(text, "\n")
+	return lines
 }
 
 func SplitLineIntoAtLeast(line, sep string, parts int) ([]string, error) {
