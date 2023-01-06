@@ -50,6 +50,7 @@ var (
 		"OpenWrt":   ParseOpenWrtDistFile,
 		"Slackware": ParseSlackwareDistFile,
 		"SUSE":      ParseSUSEDistFile,
+		"NA":        ParseFallbackDistFile,
 	}
 )
 
