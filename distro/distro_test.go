@@ -1,4 +1,4 @@
-package osfacts
+package distro_test
 
 import (
 	"testing"
