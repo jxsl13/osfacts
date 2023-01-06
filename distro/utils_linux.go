@@ -2,6 +2,7 @@ package distro
 
 import (
 	"errors"
+	"os"
 	"strings"
 )
 
