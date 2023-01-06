@@ -47,6 +47,8 @@ func detect() (*info.Os, error) {
 	}
 
 	osInfo.Distribution = name
+
+	// same format as WinVer.exe
 	osInfo.Version = fmt.Sprintf("Version %s (Build %s.%d)", displayVersion, buildNumber, patchLevel)
 	return osInfo, nil
 }
