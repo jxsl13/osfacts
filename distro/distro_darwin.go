@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	macOSXConstraint *semver.Constraint
-	osxContraint     *semver.Constraint
-	macOSConstraint  *semver.Constraint
+	macOSXConstraint *semver.Constraints
+	osxContraint     *semver.Constraints
+	macOSConstraint  *semver.Constraints
 )
 
 func init() {
