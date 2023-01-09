@@ -49,6 +49,7 @@ var (
 	parsers = map[string]fileParseFunc{
 		"Amazon":     parseAmazonDistFile,
 		"Alpine":     parseAlpineDistFile,
+		"CentOS":     parseCentOSDistFile,
 		"Debian":     parseDebianDistFile,
 		"OpenWrt":    parseOpenWrtDistFile,
 		"Slackware":  parseSlackwareDistFile,
