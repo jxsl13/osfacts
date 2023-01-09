@@ -9,21 +9,21 @@ import (
 
 var (
 	macOSXConstraint *semver.Constraint
-	osxContraint *semver.Constraint
-	macOSConstraint *semver.Constraint
+	osxContraint     *semver.Constraint
+	macOSConstraint  *semver.Constraint
 )
 
 func init() {
 	var err error
 	macOSXConstraint, err = semver.NewConstraint("< 10.8")
-    if err != nil {
-        panic(err)
-    }
+	if err != nil {
+		panic(err)
+	}
 
 	osxContraint, err = semver.NewConstraint("< 10.12")
 	if err != nil {
-        panic(err)
-    }
+		panic(err)
+	}
 }
 
 // reference: https://n8felton.wordpress.com/2022/01/28/macos-version-naming-conventions/
@@ -59,9 +59,6 @@ func detect() (*info.Os, error) {
 
 	osInfo.Distribution = macOSName(version)
 	osInfo.Version = version.String()
-
-
-	if
 
 	return osInfo, nil
 }
