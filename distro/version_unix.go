@@ -37,3 +37,31 @@ func findSemanticVersion(content string) (string, error) {
 
 	return version, nil
 }
+
+func findSemVer(content string) (*semver.Version, error) {
+	var version *semver.Version
+	vs := ""
+	matches := semverRegex.FindAllString(content, -1)
+	if len(matches) == 0 {
+		return nil, ErrVersionNotFound
+	}
+
+	for _, v := range matches {
+		sv, err := semver.NewVersion(v)
+		if err != nil {
+			continue
+		}
+		svStr := sv.String()
+
+		if len(svStr) > len(vs) {
+			vs = svStr
+			version = sv
+		}
+	}
+
+	if vs == "" {
+		return nil, ErrVersionNotFound
+	}
+
+	return version, nil
+}
