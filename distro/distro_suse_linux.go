@@ -2,6 +2,7 @@ package distro
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/jxsl13/osfacts/info"
@@ -13,26 +14,25 @@ func parseSUSEDistFile(dist distribution, fileContent string, osInfo *info.Os) e
 		return err
 	}
 
+	distName, version := "", ""
+
 	switch dist.Path {
 	case "/etc/os-release":
 		m, err := getOsReleaseMap(fileContent)
 		if err != nil {
 			return err
 		}
-		distName, err := getKey(m, "NAME")
+		distName, err = getKey(m, "NAME")
 		if err != nil {
 			return err
 		}
 
-		version, err := findOsReleaseSemanticVersionInMap(m, "VERSION_ID")
+		version, err = findOsReleaseSemanticVersionInMap(m, "VERSION_ID")
 		if err != nil {
 			return err
 		}
-
-		osInfo.Update(distName, version)
 
 	case "/etc/SuSE-release":
-		distName, version := "", ""
 
 		lines := strings.Split(fileContent, "\n")
 		if len(lines) == 0 {
@@ -56,13 +56,18 @@ func parseSUSEDistFile(dist distribution, fileContent string, osInfo *info.Os) e
 			}
 		}
 
-		version, err := findSemanticVersion(fileContent)
+		version, err = findSemanticVersion(fileContent)
 		if err != nil {
 			return err
 		}
 
-		osInfo.Update(distName, version)
 	}
 
+	realPath, err := os.Readlink("/etc/products.d/baseproduct")
+	if err == nil && strings.HasSuffix(realPath, "SLES_SAP.prod") {
+		distName = "SLES_SAP"
+	}
+
+	osInfo.Update(distName, version)
 	return nil
 }
