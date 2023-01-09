@@ -3,6 +3,7 @@ package distro
 import (
 	"fmt"
 
+	"github.com/Masterminds/semver"
 	"github.com/jxsl13/osfacts/common"
 	"github.com/jxsl13/osfacts/info"
 )
