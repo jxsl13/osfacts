@@ -76,18 +76,18 @@ func parseDistFile(dist distribution, fileContent string) (*info.Os, error) {
 
 	if searchString, found := searchStringMap[dist.Name]; found {
 		if strings.Contains(fileContent, searchString) {
-			osInfo.Name = dist.Name
+			osInfo.Distribution = dist.Name
 		} else {
 			tokens := strings.SplitN(fileContent, " ", 2)
 			if len(tokens) != 2 {
 				return nil, fmt.Errorf("invalid distribution release file content (%s): %s", dist.Name, dist.Path)
 			}
 			// use first string from /etc/xyz file
-			osInfo.Name = strings.TrimSpace(stripQuotes(tokens[0]))
+			osInfo.Distribution = strings.TrimSpace(stripQuotes(tokens[0]))
 		}
 
 		if alias, found := releaseAlias[dist.Name]; found && strings.Contains(fileContent, alias) {
-			osInfo.Name = alias
+			osInfo.Distribution = alias
 		}
 
 		versionString, err := findSemanticVersion(fileContent)

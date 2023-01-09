@@ -16,7 +16,7 @@ func Test_detect(t *testing.T) {
 	require.NotNil(t, got)
 
 	require.NotEmpty(t, got.Arch)
-	require.NotEmpty(t, got.Name)
+	require.NotEmpty(t, got.Family)
 	require.NotEmpty(t, got.Distribution)
 	require.NotEmpty(t, got.Version)
 	require.NoError(t, err)

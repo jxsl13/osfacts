@@ -4,7 +4,7 @@ import "runtime"
 
 type Os struct {
 	// linux, windows etc
-	Name string `json:"os"`
+	Family string `json:"family"`
 	// architecture: amd64, arm64, etc.
 	Arch string `json:"arch"`
 	// ubuntu, alpine, server (windows server)
@@ -15,7 +15,7 @@ type Os struct {
 
 func NewOs() *Os {
 	return &Os{
-		Name: runtime.GOOS,
-		Arch: runtime.GOARCH,
+		Family: runtime.GOOS,
+		Arch:   runtime.GOARCH,
 	}
 }
