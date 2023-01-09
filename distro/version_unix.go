@@ -24,7 +24,7 @@ func findSemanticVersion(content string) (string, error) {
 		if err != nil {
 			continue
 		}
-		semVersionStr := semVersion.String()
+		semVersionStr := semVersion.Original()
 
 		if len(semVersionStr) > len(version) {
 			version = semVersionStr
@@ -51,7 +51,7 @@ func findSemVer(content string) (*semver.Version, error) {
 		if err != nil {
 			continue
 		}
-		svStr := sv.String()
+		svStr := sv.Original()
 
 		if len(svStr) > len(vs) {
 			vs = svStr
