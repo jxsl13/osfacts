@@ -9,6 +9,7 @@ import (
 )
 
 var (
+	// TODO: distribution should be a public interface with a Detect method
 	osDistList = []distribution{
 		{Path: "/etc/altlinux-release", Name: "Altlinux"},
 		{Path: "/etc/oracle-release", Name: "OracleLinux"},
