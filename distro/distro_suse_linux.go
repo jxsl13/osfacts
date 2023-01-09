@@ -7,36 +7,36 @@ import (
 	"github.com/jxsl13/osfacts/info"
 )
 
-func ParseSUSEDistFile(dist distribution, fileContent string) (*info.Os, error) {
+func parseSUSEDistFile(dist distribution, fileContent string, osInfo *info.Os) error {
 	_, err := mustContainOneOf(fileContent, dist.Name, strings.ToLower(dist.Name))
 	if err != nil {
-		return nil, err
+		return err
 	}
-	osInfo := info.NewOs()
-	osInfo.Distribution = dist.Name
 
 	switch dist.Path {
 	case "/etc/os-release":
 		m, err := getOsReleaseMap(fileContent)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		name, err := getKey(m, "NAME")
+		distName, err := getKey(m, "NAME")
 		if err != nil {
-			return nil, err
+			return err
 		}
-		osInfo.Distribution = name
 
 		version, err := findOsReleaseSemanticVersionInMap(m, "VERSION_ID")
 		if err != nil {
-			return nil, err
+			return err
 		}
-		osInfo.Version = version
+
+		osInfo.Update(distName, version)
 
 	case "/etc/SuSE-release":
+		distName, version := "", ""
+
 		lines := strings.Split(fileContent, "\n")
 		if len(lines) == 0 {
-			return nil, fmt.Errorf("%w: %s", ErrInvalidFileFormat, dist.Path)
+			return fmt.Errorf("%w: %s", ErrInvalidFileFormat, dist.Path)
 		}
 		lcFileContent := strings.ToLower(fileContent)
 
@@ -44,24 +44,25 @@ func ParseSUSEDistFile(dist distribution, fileContent string) (*info.Os, error) 
 			distLine := lines[0]
 			tokens := strings.SplitN(distLine, " ", 2)
 			if len(tokens) != 2 {
-				return nil, fmt.Errorf("%w: unexpected first line: %s", ErrInvalidFileFormat, dist.Path)
+				return fmt.Errorf("%w: unexpected first line: %s", ErrInvalidFileFormat, dist.Path)
 			}
-			osInfo.Distribution = tokens[0]
+			distName = tokens[0]
 		} else if strings.Contains(lcFileContent, "enterprise") {
 
 			if strings.Contains(fileContent, "Server") {
-				osInfo.Distribution = "SLES"
+				distName = "SLES"
 			} else if strings.Contains(fileContent, "Desktop") {
-				osInfo.Distribution = "SLED"
+				distName = "SLED"
 			}
 		}
 
 		version, err := findSemanticVersion(fileContent)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		osInfo.Version = version
+
+		osInfo.Update(distName, version)
 	}
 
-	return osInfo, nil
+	return nil
 }

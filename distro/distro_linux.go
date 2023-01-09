@@ -10,26 +10,29 @@ import (
 
 var (
 	osDistList = []distribution{
-		{Path: "/etc/os-release", Name: "Amazon"},
-		{Path: "/etc/os-release", Name: "Archlinux"},
-		{Path: "/etc/os-release", Name: "Debian"},
-		{Path: "/etc/os-release", Name: "Flatcar"},
-		{Path: "/etc/os-release", Name: "SUSE"},
 		{Path: "/etc/altlinux-release", Name: "Altlinux"},
 		{Path: "/etc/oracle-release", Name: "OracleLinux"},
 		{Path: "/etc/slackware-version", Name: "Slackware"},
 		{Path: "/etc/centos-release", Name: "CentOS"},
 		{Path: "/etc/redhat-release", Name: "RedHat"},
+		//{Path: "/etc/vmware-release", Name: "VMwareESX"}, // TODO: add custom detection
 		{Path: "/etc/openwrt_release", Name: "OpenWrt"},
+		{Path: "/etc/os-release", Name: "Amazon"},
 		{Path: "/etc/system-release", Name: "Amazon"},
 		{Path: "/etc/alpine-release", Name: "Alpine"},
+		{Path: "/etc/arch-release", Name: "Archlinux"},
+		// {Path: "/etc/os-release", Name: "Archlinux"}, // TODO: add custom detection
+		{Path: "/etc/os-release", Name: "SUSE"},
 		{Path: "/etc/SuSE-release", Name: "SUSE"},
 		{Path: "/etc/gentoo-release", Name: "Gentoo"},
+		{Path: "/etc/os-release", Name: "Debian"},
 		{Path: "/etc/lsb-release", Name: "Debian"},
 		{Path: "/etc/lsb-release", Name: "Mandriva"},
 		{Path: "/etc/sourcemage-release", Name: "SMGL"},
 		{Path: "/usr/lib/os-release", Name: "ClearLinux"},
-		{Path: "/etc/os-release", Name: "NA"},
+		//{Path: "/etc/coreos/update.conf", Name: "Coreos"}, // TODO: need test environment
+		// {Path: "/etc/os-release", Name: "Flatcar"},  // TODO: need test environment
+		{Path: "/etc/os-release", Name: ""},
 	}
 
 	searchStringMap = map[string]string{
@@ -44,35 +47,44 @@ var (
 	}
 
 	parsers = map[string]fileParseFunc{
-		"Amazon":    ParseAmazonDistFile,
-		"Alpine":    ParseAlpineDistFile,
-		"Debian":    ParseDebianDistFile,
-		"OpenWrt":   ParseOpenWrtDistFile,
-		"Slackware": ParseSlackwareDistFile,
-		"SUSE":      ParseSUSEDistFile,
-		"NA":        ParseFallbackDistFile,
+		"Amazon":     parseAmazonDistFile,
+		"Alpine":     parseAlpineDistFile,
+		"Debian":     parseDebianDistFile,
+		"OpenWrt":    parseOpenWrtDistFile,
+		"Slackware":  parseSlackwareDistFile,
+		"SUSE":       parseSUSEDistFile,
+		"Mandriva":   parseMandrivaDistFile,
+		"ClearLinux": parseClearLinuxDistFile,
+		"":           parseFallbackDistFile,
 	}
 )
 
 func detect() (*info.Os, error) {
+	var (
+		found  = false
+		osInfo = info.NewOs()
+	)
+
 	for _, dist := range osDistList {
 		content, err := dist.Content()
 		if err != nil {
+			// file not found
 			continue
 		}
-		info, err := parseDistFile(dist, content)
-		if err != nil {
-			continue
-		} else {
-			return info, nil
+		err = parseDistFile(dist, content, osInfo)
+		if err == nil {
+			found = true
 		}
 	}
 
-	return nil, ErrDetectionFailed
+	if !found {
+		return nil, ErrDetectionFailed
+	}
+
+	return osInfo, nil
 }
 
-func parseDistFile(dist distribution, fileContent string) (*info.Os, error) {
-	osInfo := info.NewOs()
+func parseDistFile(dist distribution, fileContent string, osInfo *info.Os) error {
 
 	if searchString, found := searchStringMap[dist.Name]; found {
 		if strings.Contains(fileContent, searchString) {
@@ -80,7 +92,7 @@ func parseDistFile(dist distribution, fileContent string) (*info.Os, error) {
 		} else {
 			tokens := strings.SplitN(fileContent, " ", 2)
 			if len(tokens) != 2 {
-				return nil, fmt.Errorf("invalid distribution release file content (%s): %s", dist.Name, dist.Path)
+				return fmt.Errorf("invalid distribution release file content (%s): %s", dist.Name, dist.Path)
 			}
 			// use first string from /etc/xyz file
 			osInfo.Distribution = strings.TrimSpace(stripQuotes(tokens[0]))
@@ -92,16 +104,16 @@ func parseDistFile(dist distribution, fileContent string) (*info.Os, error) {
 
 		versionString, err := findSemanticVersion(fileContent)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		osInfo.Version = versionString
-		return osInfo, nil
+		return nil
 	}
 
 	parser, found := parsers[dist.Name]
 	if !found {
-		return nil, errors.New("distribution could not be detected")
+		return errors.New("distribution could not be detected")
 	}
 
-	return parser(dist, fileContent)
+	return parser(dist, fileContent, osInfo)
 }

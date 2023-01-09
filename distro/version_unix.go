@@ -1,5 +1,6 @@
 package distro
 
+//build !aix
 import (
 	"errors"
 	"regexp"

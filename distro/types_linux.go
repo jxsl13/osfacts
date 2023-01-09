@@ -7,7 +7,7 @@ import (
 	"github.com/jxsl13/osfacts/info"
 )
 
-type fileParseFunc func(dist distribution, fileContent string) (*info.Os, error)
+type fileParseFunc func(dist distribution, fileContent string, osInfo *info.Os) error
 
 type distribution struct {
 	Name string

@@ -2,6 +2,7 @@ package distro
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/jxsl13/osfacts/common"
 	"github.com/jxsl13/osfacts/info"
@@ -18,10 +19,6 @@ func detect() (*info.Os, error) {
 	}
 	osInfo := info.NewOs()
 
-	version, err := findSemanticVersion(output)
-	if err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrDetectionFailed, err)
-	}
-	osInfo.Version = version
+	osInfo.Version = strings.TrimSpace(output)
 	return osInfo, nil
 }

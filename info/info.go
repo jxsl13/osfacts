@@ -19,3 +19,13 @@ func NewOs() *Os {
 		Arch:   runtime.GOARCH,
 	}
 }
+
+func (info *Os) Update(distribution, version string) {
+	if len(version) > len(info.Version) {
+		info.Version = version
+	}
+
+	if distribution != "" {
+		info.Distribution = distribution
+	}
+}

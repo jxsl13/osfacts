@@ -1,6 +1,7 @@
 package distro_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/jxsl13/osfacts/distro"
@@ -20,4 +21,9 @@ func Test_detect(t *testing.T) {
 	require.NotEmpty(t, got.Distribution)
 	require.NotEmpty(t, got.Version)
 	require.NoError(t, err)
+
+	data, err := json.MarshalIndent(got, "", " ")
+	require.NoError(t, err)
+
+	t.Logf("OS_INFO: %s", string(data))
 }

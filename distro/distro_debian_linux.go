@@ -2,47 +2,46 @@ package distro
 
 import "github.com/jxsl13/osfacts/info"
 
-func ParseDebianDistFile(dist distribution, fileContent string) (*info.Os, error) {
+func parseDebianDistFile(dist distribution, fileContent string, osInfo *info.Os) error {
 	distName, err := mustContainOneOf(fileContent, dist.Name, "Raspbian", "Ubuntu", "Devuan", "Cumulus", "Mint", "Deepin", "deepin", "UOS", "Uos", "uos")
 	if err != nil {
-		return nil, err
+		return err
 	}
-	osInfo := info.NewOs()
 	defaultVersionSearch := true
+	distVersion := ""
 
 	switch distName {
 	case "Debian", "Raspbian":
 		defaultVersionSearch = false
+
 		versionContent, err := getFileContent("/etc/debian_version")
 		if err != nil {
-			return nil, err
+			return err
 		}
-		version, err := findSemanticVersion(versionContent)
+		distVersion, err = findSemanticVersion(versionContent)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		osInfo.Version = version
 
 	case "Cumulus":
-		osInfo.Distribution = "Cumulus Linux"
+		distName = "Cumulus Linux"
 	case "Mint":
-		osInfo.Distribution = "Linux Mint"
+		distName = "Linux Mint"
 	case "UOS", "Uos", "uos":
-		osInfo.Distribution = "Uos"
+		distName = "Uos"
 	case "Deepin", "deepin":
-		osInfo.Distribution = "Deepin"
+		distName = "Deepin"
 	default:
-		osInfo.Distribution = distName
 		//Ubuntu, Devuan
 	}
 
 	if defaultVersionSearch {
-		version, err := findOsReleaseSemanticVersion(fileContent, "VERSION_ID", "VERSION")
+		distVersion, err = findOsReleaseSemanticVersion(fileContent, "VERSION_ID", "VERSION")
 		if err != nil {
-			return nil, err
+			return err
 		}
-		osInfo.Version = version
 	}
 
-	return osInfo, nil
+	osInfo.Update(distName, distVersion)
+	return nil
 }

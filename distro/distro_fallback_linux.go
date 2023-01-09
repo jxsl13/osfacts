@@ -7,68 +7,64 @@ import (
 	"github.com/jxsl13/osfacts/info"
 )
 
-func ParseFallbackDistFile(dist distribution, fileContent string) (*info.Os, error) {
-	osInfo := info.NewOs()
-	osInfo.Distribution = dist.Name
+func parseFallbackDistFile(dist distribution, fileContent string, osInfo *info.Os) error {
 
 	m, err := getOsReleaseMap(fileContent)
 	if err == nil {
 		name, err := getKey(m, "NAME")
 		if err == nil {
-			osInfo.Distribution = name
 			version, err := findOsReleaseSemanticVersionInMap(m)
 			if err == nil {
-				osInfo.Version = version
-				return osInfo, nil
+				osInfo.Update(name, version)
+				return nil
 			} else {
 				version, err := findSemanticVersion(fileContent)
 				if err != nil {
-					return nil, err
+					return err
 				}
-				osInfo.Version = version
-				return osInfo, nil
+				osInfo.Update(name, version)
+				return nil
 			}
 		} else {
 			lines := strings.SplitN(fileContent, "\n\r", 2)
 			if len(lines) == 0 {
-				return nil, fmt.Errorf("%w: %s", ErrInvalidFileFormat, dist.Path)
+				return fmt.Errorf("%w: %s", ErrInvalidFileFormat, dist.Path)
 			}
 			tokens := strings.Split(lines[0], "\t\n\v\f\r ")
 			name := tokens[0]
 			if strings.Contains(name, "!§$%&/()=?\\") {
-				return nil, fmt.Errorf("%w: unexpected first line: %s", ErrInvalidFileFormat, dist.Path)
+				return fmt.Errorf("%w: unexpected first line: %s", ErrInvalidFileFormat, dist.Path)
 			}
-			osInfo.Distribution = name
+
 			version, err := findOsReleaseSemanticVersionInMap(m)
 			if err == nil {
-				osInfo.Version = version
-				return osInfo, nil
+				osInfo.Update(name, version)
+				return nil
 			} else {
 				version, err := findSemanticVersion(fileContent)
 				if err != nil {
-					return nil, err
+					return err
 				}
-				osInfo.Version = version
-				return osInfo, nil
+				osInfo.Update(name, version)
+				return nil
 			}
 		}
 	} else {
 		lines := strings.SplitN(fileContent, "\n\r", 2)
 		if len(lines) == 0 {
-			return nil, fmt.Errorf("%w: %s", ErrInvalidFileFormat, dist.Path)
+			return fmt.Errorf("%w: %s", ErrInvalidFileFormat, dist.Path)
 		}
 		tokens := strings.Split(lines[0], "\t\n\v\f\r ")
 		name := tokens[0]
 		if strings.Contains(name, "!§$%&/()=?\\") {
-			return nil, fmt.Errorf("%w: unexpected first line: %s", ErrInvalidFileFormat, dist.Path)
+			return fmt.Errorf("%w: unexpected first line: %s", ErrInvalidFileFormat, dist.Path)
 		}
-		osInfo.Distribution = name
 
 		version, err := findSemanticVersion(fileContent)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		osInfo.Version = version
-		return osInfo, nil
+		osInfo.Update(name, version)
+		return nil
 	}
 }
