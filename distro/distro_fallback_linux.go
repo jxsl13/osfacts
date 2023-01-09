@@ -15,15 +15,13 @@ func parseFallbackDistFile(dist distribution, fileContent string, osInfo *info.O
 		if err == nil {
 			version, err := findOsReleaseSemanticVersionInMap(m)
 			if err == nil {
-				osInfo.Update(name, version)
-				return nil
+				return osInfo.Update(name, version)
 			} else {
 				version, err := findSemanticVersion(fileContent)
 				if err != nil {
 					return err
 				}
-				osInfo.Update(name, version)
-				return nil
+				return osInfo.Update(name, version)
 			}
 		} else {
 			lines := strings.SplitN(fileContent, "\n\r", 2)
@@ -38,15 +36,13 @@ func parseFallbackDistFile(dist distribution, fileContent string, osInfo *info.O
 
 			version, err := findOsReleaseSemanticVersionInMap(m)
 			if err == nil {
-				osInfo.Update(name, version)
-				return nil
+				return osInfo.Update(name, version)
 			} else {
 				version, err := findSemanticVersion(fileContent)
 				if err != nil {
 					return err
 				}
-				osInfo.Update(name, version)
-				return nil
+				return osInfo.Update(name, version)
 			}
 		}
 	} else {
@@ -64,7 +60,6 @@ func parseFallbackDistFile(dist distribution, fileContent string, osInfo *info.O
 		if err != nil {
 			return err
 		}
-		osInfo.Update(name, version)
-		return nil
+		return osInfo.Update(name, version)
 	}
 }

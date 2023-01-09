@@ -58,8 +58,6 @@ func detect() (*info.Os, error) {
 		return nil, fmt.Errorf("%w: %v", ErrDetectionFailed, err)
 	}
 
-	osInfo.Distribution = macOSName(version)
-	osInfo.Version = version.String()
-
-	return osInfo, nil
+	err = osInfo.Update(macOSName(version), version.String())
+	return osInfo, err
 }

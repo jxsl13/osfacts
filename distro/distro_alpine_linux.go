@@ -7,12 +7,10 @@ func parseAlpineDistFile(dist distribution, fileContent string, osInfo *info.Os)
 	if err != nil {
 		return err
 	}
-	osInfo.Distribution = dist.Name
 
 	version, err := findOsReleaseSemanticVersion(fileContent)
 	if err == nil {
-		osInfo.Update(dist.Name, version)
-		return nil
+		return osInfo.Update(dist.Name, version)
 	}
 
 	version, err = findSemanticVersion(fileContent)
@@ -20,6 +18,5 @@ func parseAlpineDistFile(dist distribution, fileContent string, osInfo *info.Os)
 		return err
 	}
 
-	osInfo.Update(dist.Name, version)
-	return nil
+	return osInfo.Update(dist.Name, version)
 }

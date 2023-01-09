@@ -10,8 +10,8 @@ func parseOpenWrtDistFile(dist distribution, fileContent string, osInfo *info.Os
 
 	version, err := findOsReleaseSemanticVersion(fileContent, "DISTRIB_RELEASE")
 	if err == nil {
-		osInfo.Update(distName, version)
-		return nil
+
+		return osInfo.Update(distName, version)
 	}
 
 	version, err = findSemanticVersion(fileContent)
@@ -19,6 +19,5 @@ func parseOpenWrtDistFile(dist distribution, fileContent string, osInfo *info.Os
 		return err
 	}
 
-	osInfo.Update(distName, version)
-	return nil
+	return osInfo.Update(distName, version)
 }

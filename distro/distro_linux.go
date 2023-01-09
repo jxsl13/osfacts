@@ -32,7 +32,7 @@ var (
 		{Path: "/usr/lib/os-release", Name: "ClearLinux"},
 		//{Path: "/etc/coreos/update.conf", Name: "Coreos"}, // TODO: need test environment
 		// {Path: "/etc/os-release", Name: "Flatcar"},  // TODO: need test environment
-		{Path: "/etc/os-release", Name: ""},
+		{Path: "/etc/os-release", Name: ""}, // fallback search
 	}
 
 	searchStringMap = map[string]string{
@@ -62,7 +62,6 @@ var (
 
 func detect() (*info.Os, error) {
 	var (
-		found  = false
 		osInfo = info.NewOs()
 	)
 
@@ -74,15 +73,11 @@ func detect() (*info.Os, error) {
 		}
 		err = parseDistFile(dist, content, osInfo)
 		if err == nil {
-			found = true
+			return osInfo, nil
 		}
 	}
 
-	if !found {
-		return nil, ErrDetectionFailed
-	}
-
-	return osInfo, nil
+	return nil, ErrDetectionFailed
 }
 
 func parseDistFile(dist distribution, fileContent string, osInfo *info.Os) error {

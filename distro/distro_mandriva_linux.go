@@ -13,6 +13,5 @@ func parseMandrivaDistFile(dist distribution, fileContent string, osInfo *info.O
 		return err
 	}
 
-	osInfo.Update(distName, version)
-	return nil
+	return osInfo.Update(distName, version)
 }

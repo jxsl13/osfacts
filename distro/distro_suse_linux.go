@@ -68,6 +68,5 @@ func parseSUSEDistFile(dist distribution, fileContent string, osInfo *info.Os) e
 		distName = "SLES_SAP"
 	}
 
-	osInfo.Update(distName, version)
-	return nil
+	return osInfo.Update(distName, version)
 }

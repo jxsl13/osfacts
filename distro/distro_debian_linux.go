@@ -42,6 +42,5 @@ func parseDebianDistFile(dist distribution, fileContent string, osInfo *info.Os)
 		}
 	}
 
-	osInfo.Update(distName, distVersion)
-	return nil
+	return osInfo.Update(distName, distVersion)
 }

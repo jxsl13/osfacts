@@ -1,6 +1,9 @@
 package info
 
-import "runtime"
+import (
+	"errors"
+	"runtime"
+)
 
 type Os struct {
 	// linux, windows etc
@@ -20,12 +23,11 @@ func NewOs() *Os {
 	}
 }
 
-func (info *Os) Update(distribution, version string) {
-	if len(version) > len(info.Version) {
-		info.Version = version
-	}
-
-	if distribution != "" {
+func (info *Os) Update(distribution, version string) error {
+	if len(version) > len(info.Version) && distribution != "" {
 		info.Distribution = distribution
+		info.Version = version
+		return nil
 	}
+	return errors.New("not updated")
 }

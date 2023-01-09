@@ -15,6 +15,5 @@ func parseSlackwareDistFile(dist distribution, fileContent string, osInfo *info.
 		return err
 	}
 
-	osInfo.Update(distName, version)
-	return nil
+	return osInfo.Update(distName, version)
 }

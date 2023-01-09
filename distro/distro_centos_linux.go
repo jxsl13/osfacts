@@ -30,6 +30,5 @@ func parseCentOSDistFile(dist distribution, fileContent string, osInfo *info.Os)
 		return err
 	}
 
-	osInfo.Update(distName, version)
-	return nil
+	return osInfo.Update(distName, version)
 }

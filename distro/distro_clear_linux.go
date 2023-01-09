@@ -15,6 +15,5 @@ func parseClearLinuxDistFile(dist distribution, fileContent string, osInfo *info
 		return err
 	}
 
-	osInfo.Update(dist.Name, version)
-	return nil
+	return osInfo.Update(dist.Name, version)
 }

@@ -25,6 +25,5 @@ func parseAmazonDistFile(dist distribution, fileContent string, osInfo *info.Os)
 	}
 
 	// version must be set at this point, otherwise an error should have occured
-	osInfo.Update(dist.Name, version)
-	return nil
+	return osInfo.Update(dist.Name, version)
 }
