@@ -1,6 +1,7 @@
 package distro
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -8,59 +9,38 @@ import (
 	"github.com/jxsl13/osfacts/info"
 )
 
-func parseSUSEDistFile(dist distribution, fileContent string, osInfo *info.Os) error {
-	_, err := mustContainOneOf(fileContent, dist.Name, strings.ToLower(dist.Name))
-	if err != nil {
-		return err
-	}
+func parseSuseReleaseDistFile(dist distribution, filePath, fileContent string, osInfo *info.Os) error {
 
+	if filePath != "/etc/SuSE-release" {
+		return errors.New("invalid SUSE release path")
+	}
 	distName, version := "", ""
 
-	switch dist.Path {
-	case "/etc/os-release":
-		m, err := getOsReleaseMap(fileContent)
-		if err != nil {
-			return err
+	lines := strings.Split(fileContent, "\n")
+	if len(lines) == 0 {
+		return fmt.Errorf("%w: %s", ErrInvalidFileFormat, filePath)
+	}
+	lcFileContent := strings.ToLower(fileContent)
+
+	if strings.Contains(lcFileContent, "open") {
+		distLine := lines[0]
+		tokens := strings.SplitN(distLine, " ", 2)
+		if len(tokens) != 2 {
+			return fmt.Errorf("%w: unexpected first line: %s", ErrInvalidFileFormat, filePath)
 		}
-		distName, err = getKey(m, "NAME")
-		if err != nil {
-			return err
+		distName = tokens[0]
+	} else if strings.Contains(lcFileContent, "enterprise") {
+
+		if strings.Contains(fileContent, "Server") {
+			distName = "SLES"
+		} else if strings.Contains(fileContent, "Desktop") {
+			distName = "SLED"
 		}
+	}
 
-		version, err = findOsReleaseSemanticVersionInMap(m, "VERSION_ID")
-		if err != nil {
-			return err
-		}
-
-	case "/etc/SuSE-release":
-
-		lines := strings.Split(fileContent, "\n")
-		if len(lines) == 0 {
-			return fmt.Errorf("%w: %s", ErrInvalidFileFormat, dist.Path)
-		}
-		lcFileContent := strings.ToLower(fileContent)
-
-		if strings.Contains(lcFileContent, "open") {
-			distLine := lines[0]
-			tokens := strings.SplitN(distLine, " ", 2)
-			if len(tokens) != 2 {
-				return fmt.Errorf("%w: unexpected first line: %s", ErrInvalidFileFormat, dist.Path)
-			}
-			distName = tokens[0]
-		} else if strings.Contains(lcFileContent, "enterprise") {
-
-			if strings.Contains(fileContent, "Server") {
-				distName = "SLES"
-			} else if strings.Contains(fileContent, "Desktop") {
-				distName = "SLED"
-			}
-		}
-
-		version, err = findSemanticVersion(fileContent)
-		if err != nil {
-			return err
-		}
-
+	version, err := findSemanticVersion(fileContent)
+	if err != nil {
+		return err
 	}
 
 	realPath, err := os.Readlink("/etc/products.d/baseproduct")
@@ -68,5 +48,6 @@ func parseSUSEDistFile(dist distribution, fileContent string, osInfo *info.Os) e
 		distName = "SLES_SAP"
 	}
 
-	return osInfo.Update(distName, version)
+	osInfo.Update(distName, version)
+	return nil
 }

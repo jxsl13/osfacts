@@ -4,8 +4,8 @@ import (
 	"github.com/jxsl13/osfacts/info"
 )
 
-func parseCentOSDistFile(dist distribution, fileContent string, osInfo *info.Os) error {
-	envMap, err := getOsReleaseMap(fileContent)
+func parseCentOSDistFile(dist distribution, filePath, fileContent string, osInfo *info.Os) error {
+	envMap, err := getEnvMap(fileContent)
 	if err != nil {
 		return err
 	}
@@ -25,10 +25,11 @@ func parseCentOSDistFile(dist distribution, fileContent string, osInfo *info.Os)
 		distName = "CentOS"
 	}
 
-	version, err := findOsReleaseSemanticVersionInMap(envMap, "VERSION_ID", "VERSION")
+	version, err := findEnvSemanticVersionInMap(envMap, "VERSION_ID", "VERSION")
 	if err != nil {
 		return err
 	}
 
-	return osInfo.Update(distName, version)
+	osInfo.Update(distName, version)
+	return nil
 }

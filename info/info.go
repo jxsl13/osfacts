@@ -1,7 +1,6 @@
 package info
 
 import (
-	"errors"
 	"runtime"
 )
 
@@ -23,11 +22,12 @@ func NewOs() *Os {
 	}
 }
 
-func (info *Os) Update(distribution, version string) error {
+func (info *Os) Update(distribution, version string) {
 	if len(version) > len(info.Version) && distribution != "" {
-		info.Distribution = distribution
 		info.Version = version
-		return nil
 	}
-	return errors.New("not updated")
+
+	if distribution != "" {
+		info.Distribution = distribution
+	}
 }

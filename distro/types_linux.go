@@ -7,15 +7,45 @@ import (
 	"github.com/jxsl13/osfacts/info"
 )
 
-type fileParseFunc func(dist distribution, fileContent string, osInfo *info.Os) error
+type fileParseFunc func(dist distribution, filePath, fileContent string, osInfo *info.Os) error
 
 type distribution struct {
-	Name string
-	Path string
+	Name        string
+	SearchNames []string
+	Alias       string
+	ParseFunc   fileParseFunc
 }
 
-func (o *distribution) Content() (string, error) {
-	return getFileContent(o.Path)
+func (o *distribution) search(fileContent string) error {
+	_, err := mustContainOneOf(fileContent, unique(append(o.SearchNames, o.Name))...)
+	return err
+}
+
+func (o *distribution) InfoName() string {
+	if o.Alias != "" {
+		return o.Alias
+	}
+	return o.Name
+}
+
+func (o *distribution) Parse(filePath, fileContent string) (*info.Os, error) {
+	err := o.search(fileContent)
+	if err != nil {
+		return nil, err
+	}
+
+	parser := parseFallbackDistFile
+	if o.ParseFunc != nil {
+		parser = o.ParseFunc
+	}
+
+	osInfo := info.NewOs()
+
+	err = parser(*o, filePath, fileContent, osInfo)
+	if err != nil {
+		return nil, err
+	}
+	return osInfo, nil
 }
 
 func getFileContent(path string) (string, error) {

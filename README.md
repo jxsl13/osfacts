@@ -44,6 +44,12 @@ ID="sles"
 ID_LIKE="suse"
 ```
 
+### RHEL 6 (/etc/redhat-release)
+
+```
+Red Hat Enterprise Linux Server release 6.10 (Santiago)
+```
+
 ### Bash Reference
 
 ```shell
