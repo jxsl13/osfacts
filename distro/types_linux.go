@@ -16,6 +16,11 @@ type distribution struct {
 	ParseFunc   fileParseFunc
 }
 
+type distPath struct {
+	Path  string
+	Dists []distribution
+}
+
 func (o *distribution) search(fileContent string) error {
 	_, err := mustContainOneOf(fileContent, unique(append(o.SearchNames, o.Name))...)
 	return err

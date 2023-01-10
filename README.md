@@ -6,49 +6,6 @@ Small library that allows to detect system information like operating system, it
 
 ## Reference files
 
-### Alpine (/etc/os-release)
-
-```
-NAME="Alpine Linux"
-ID=alpine
-VERSION_ID=3.16.2
-PRETTY_NAME="Alpine Linux v3.16"
-```
-
-### Ubuntu (/etc/os-release)
-
-```
-NAME="Ubuntu"
-ID=ubuntu
-VERSION="20.04.5 LTS (Focal Fossa)"
-VERSION_ID="20.04"
-ID_LIKE=debian
-PRETTY_NAME="Ubuntu 20.04.5 LTS"
-```
-
-
-### CentOS (old) (/etc/centos-release)
-
-```
-CentOS release 6.10 (Final)
-```
-
-### SLES (/etc/os-release)
-
-```
-NAME="SLES"
-VERSION="15-SP3"
-VERSION_ID="15.3"
-PRETTY_NAME="SUSE Linux Enterprise Server 15 SP3"
-ID="sles"
-ID_LIKE="suse"
-```
-
-### RHEL 6 (/etc/redhat-release)
-
-```
-Red Hat Enterprise Linux Server release 6.10 (Santiago)
-```
 
 ### Bash Reference
 

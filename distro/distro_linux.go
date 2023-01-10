@@ -9,7 +9,7 @@ import (
 // where could we use this distribution family
 // https://github.com/ansible/ansible/blob/devel/lib/ansible/module_utils/facts/system/distribution.py#L512-L536
 
-func newDistMap() map[string][]distribution {
+func newPaths() []distPath {
 
 	defaultKeys := []string{
 		"VERSION",
@@ -17,154 +17,221 @@ func newDistMap() map[string][]distribution {
 		"PRETTY_NAME",
 	}
 
-	return map[string][]distribution{
-		"/etc/altlinux-release": {{Name: "Altlinux", SearchNames: []string{"ALT"}}},
-		"/etc/oracle-release":   {{Name: "OracleLinux", SearchNames: []string{"Oracle Linux"}}},
-		"/etc/slackware-version": {
-			{
-				Name:      "Slackware",
-				ParseFunc: parserFindSemanticVersion,
+	// order of these files is important
+	// oracle linux > red hat
+	return []distPath{
+		{
+			Path: "/etc/os-release",
+			Dists: []distribution{
+				{
+					Name:      "Amazon",
+					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+				},
+				{
+					Name:        "SUSE",
+					SearchNames: []string{"SUSE", "suse"},
+					ParseFunc:   parserFindEnvNameAndSemanticVersionKeys("NAME", "VERSION_ID"),
+				},
+				{
+					Name:        "Debian",
+					SearchNames: []string{"Debian", "Raspbian"},
+					ParseFunc:   parserFindEnvSemanticVersionKeys(defaultKeys...),
+				},
+				{
+					Name: "Cumulus", Alias: "Cumulus Linux",
+					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+				},
+				{
+					Name: "Mint", Alias: "Linux Mint",
+					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+				},
+				{
+					Name:      "CentOS",
+					ParseFunc: parseCentOSDistFile,
+				},
+				{
+					Name: "Uos", SearchNames: []string{"UOS", "Uos", "uos"},
+					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+				},
+				{
+					Name: "Deepin", SearchNames: []string{"Deepin", "deepin"},
+					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+				},
+				{
+					Name:      "Ubuntu",
+					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+				},
+				{
+					Name:        "OracleLinux",
+					SearchNames: []string{"Oracle Linux"},
+					ParseFunc:   parserFindEnvSemanticVersionKeys(defaultKeys...),
+				},
+				{
+					Name:      "Devuan",
+					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+				},
+				{
+					Name:      "Archlinux",
+					Alias:     "Arch Linux",
+					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+				},
+				{
+					Name:        "RedHat",
+					SearchNames: []string{"Red Hat"},
+					ParseFunc:   parserFindEnvSemanticVersionKeys(defaultKeys...),
+				},
+				{
+					ParseFunc: parserFindEnvNameAndSemanticVersionKeys("NAME", defaultKeys...), // fallback
+				},
 			},
 		},
-		"/etc/centos-release": {
-			{
-				Name:      "CentOS",
-				ParseFunc: parserFindSemanticVersion,
+		{
+			Path: "/etc/altlinux-release",
+			Dists: []distribution{
+				{
+					Name:        "Altlinux",
+					SearchNames: []string{"ALT"},
+				}},
+		},
+		{
+			Path: "/etc/oracle-release",
+			Dists: []distribution{
+				{
+					Name:        "OracleLinux",
+					SearchNames: []string{"Oracle Linux"},
+				},
 			},
 		},
-		"/etc/redhat-release": {
-			{
-				Name:        "RedHat",
-				SearchNames: []string{"Red Hat"},
-				ParseFunc:   parserFindSemanticVersion,
+		{
+			Path: "/etc/slackware-version",
+			Dists: []distribution{
+				{
+					Name:      "Slackware",
+					ParseFunc: parserFindSemanticVersion,
+				},
 			},
 		},
-		"/etc/openwrt_release": {
-			{
-				Name:      "OpenWrt",
-				ParseFunc: parserFindEnvSemanticVersionKeys("DISTRIB_RELEASE"),
+		{
+			Path: "/etc/centos-release",
+			Dists: []distribution{
+				{
+					Name:      "CentOS",
+					ParseFunc: parserFindSemanticVersion,
+				},
 			},
 		},
-		"/etc/debian_version": {
-			{
-				Name:        "Debian",
-				SearchNames: []string{"Debian", "Raspbian"},
-				ParseFunc:   parserFindSemanticVersion,
+		{
+			Path: "/etc/openwrt_release",
+			Dists: []distribution{
+				{
+					Name:      "OpenWrt",
+					ParseFunc: parserFindEnvSemanticVersionKeys("DISTRIB_RELEASE"),
+				},
 			},
 		},
-		"/etc/os-release": {
-			{
-				Name:      "Amazon",
-				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
-			},
-			{
-				Name:        "SUSE",
-				SearchNames: []string{"SUSE", "suse"},
-				ParseFunc:   parserFindEnvNameAndSemanticVersionKeys("NAME", "VERSION_ID"),
-			},
-			{
-				Name:        "Debian",
-				SearchNames: []string{"Debian", "Raspbian"},
-				ParseFunc:   parserFindEnvSemanticVersionKeys(defaultKeys...),
-			},
-			{
-				Name: "Cumulus", Alias: "Cumulus Linux",
-				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
-			},
-			{
-				Name: "Mint", Alias: "Linux Mint",
-				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
-			},
-			{
-
-				Name:      "CentOS",
-				ParseFunc: parseCentOSDistFile,
-			},
-			{
-				Name: "Uos", SearchNames: []string{"UOS", "Uos", "uos"},
-				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
-			},
-			{
-				Name: "Deepin", SearchNames: []string{"Deepin", "deepin"},
-				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
-			},
-			{
-				Name:      "Ubuntu",
-				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
-			},
-			{
-				Name:      "Devuan",
-				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
-			},
-			{
-				Name:      "Archlinux",
-				Alias:     "Arch Linux",
-				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
-			},
-			{
-				ParseFunc: parserFindEnvNameAndSemanticVersionKeys("NAME", defaultKeys...), // fallback
+		{
+			Path: "/etc/debian_version",
+			Dists: []distribution{
+				{
+					Name:        "Debian",
+					SearchNames: []string{"Debian", "Raspbian"},
+					ParseFunc:   parserFindSemanticVersion,
+				},
 			},
 		},
-		"/etc/system-release": {
-			{
-				Name:      "Amazon",
-				ParseFunc: parserFindSemanticVersion,
+		{
+			Path: "/etc/system-release",
+			Dists: []distribution{
+				{
+					Name:      "Amazon",
+					ParseFunc: parserFindSemanticVersion,
+				},
 			},
 		},
-		"/etc/alpine-release": {
-
-			{
-				Name:      "Alpine",
-				ParseFunc: parserFindSemanticVersion,
+		{
+			Path: "/etc/alpine-release",
+			Dists: []distribution{
+				{
+					Name:      "Alpine",
+					ParseFunc: parserFindSemanticVersion,
+				},
 			},
 		},
-		/*"/etc/arch-release": {
-			{Name: "Archlinux", Alias: "Arch Linux"},
-		},*/
-		"/etc/SuSE-release": {
-			{
-				Name:      "SUSE",
-				ParseFunc: parseSuseReleaseDistFile,
+		{
+			Path: "/etc/SuSE-release",
+			Dists: []distribution{
+				{
+					Name:      "SUSE",
+					ParseFunc: parseSuseReleaseDistFile,
+				},
 			},
 		},
-		"/etc/gentoo-release": {{Name: "Gentoo"}},
-		"/etc/lsb-release": {
-			{
-				Name:      "Debian",
-				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
-			},
-			{
-				Name:      "Mandriva",
-				ParseFunc: parserFindEnvSemanticVersionKeys("DISTRIB_RELEASE"),
+		{
+			Path: "/etc/gentoo-release",
+			Dists: []distribution{
+				{
+					Name: "Gentoo",
+				},
 			},
 		},
-		"/etc/sourcemage-release": {
-			{
-				Name: "SMGL", SearchNames: []string{"Source Mage GNU/Linux"},
+		{
+			Path: "/etc/lsb-release",
+			Dists: []distribution{
+				{
+					Name:      "Debian",
+					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+				},
+				{
+					Name:      "Mandriva",
+					ParseFunc: parserFindEnvSemanticVersionKeys("DISTRIB_RELEASE"),
+				},
 			},
 		},
-		"/usr/lib/os-release": {
-			{Name: "ClearLinux", SearchNames: []string{"Clear Linux"}},
+		{
+			Path: "/etc/sourcemage-release",
+			Dists: []distribution{
+				{
+					Name: "SMGL", SearchNames: []string{"Source Mage GNU/Linux"},
+				},
+			},
+		},
+		{
+			Path: "/usr/lib/os-release",
+			Dists: []distribution{
+				{
+					Name:        "ClearLinux",
+					SearchNames: []string{"Clear Linux"},
+				},
+			},
+		},
+		{
+			Path: "/etc/redhat-release",
+			Dists: []distribution{
+				{
+					Name:        "RedHat",
+					SearchNames: []string{"Red Hat"},
+					ParseFunc:   parserFindSemanticVersion,
+				},
+			},
 		},
 	}
-
 }
 
 func detect() (*info.Os, error) {
 
-	for filePath, dists := range newDistMap() {
-		exists, err := existsWithSize(filePath, false)
+	for _, distPath := range newPaths() {
+		exists, err := existsWithSize(distPath.Path, false)
 		if !exists || err != nil {
 			continue
 		}
 
-		fileContent, err := getFileContent(filePath)
+		fileContent, err := getFileContent(distPath.Path)
 		if err != nil {
-			return nil, fmt.Errorf("failed to open %s: %w", filePath, err)
+			return nil, fmt.Errorf("failed to open %s: %w", distPath.Path, err)
 		}
 
-		for _, dist := range dists {
-			osInfo, err := dist.Parse(filePath, fileContent)
+		for _, dist := range distPath.Dists {
+			osInfo, err := dist.Parse(distPath.Path, fileContent)
 			if err != nil {
 				continue
 			}
