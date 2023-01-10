@@ -44,6 +44,14 @@ func Test_detectWithParams(t *testing.T) {
 		wantErr     bool
 	}{
 		{
+			"/etc/SuSE-release",
+			`SUSE Linux Enterprise Server 10 (x86_64)
+			VERSION = 10
+			PATCHLEVEL = 4`,
+			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "SLES", Version: "10.4"},
+			false,
+		},
+		{
 			"/etc/os-release",
 			`NAME="Alpine Linux"
 ID=alpine
