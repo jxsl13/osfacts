@@ -70,13 +70,13 @@ func findEnvSemanticVersionInMap(envMap map[string]string, keys ...string) (stri
 				continue
 			}
 
+			vOriginal := v.Original()
+
 			if version == nil {
 				version = v
-				original = v.String()
+				original = vOriginal
 				continue
 			}
-
-			vOriginal := v.Original()
 
 			if len(vOriginal) > len(original) {
 				version = v
@@ -100,13 +100,12 @@ func findEnvSemanticVersionInMap(envMap map[string]string, keys ...string) (stri
 				continue
 			}
 
+			vOriginal := v.Original()
 			if version == nil {
 				version = v
-				original = v.String()
+				original = vOriginal
 				continue
 			}
-
-			vOriginal := v.Original()
 
 			if len(vOriginal) > len(original) {
 				version = v

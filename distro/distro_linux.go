@@ -11,6 +11,12 @@ import (
 
 func newDistMap() map[string][]distribution {
 
+	defaultKeys := []string{
+		"VERSION",
+		"VERSION_ID",
+		"PRETTY_NAME",
+	}
+
 	return map[string][]distribution{
 		"/etc/altlinux-release": {{Name: "Altlinux", SearchNames: []string{"ALT"}}},
 		"/etc/oracle-release":   {{Name: "OracleLinux", SearchNames: []string{"Oracle Linux"}}},
@@ -23,7 +29,7 @@ func newDistMap() map[string][]distribution {
 		"/etc/centos-release": {
 			{
 				Name:      "CentOS",
-				ParseFunc: parseCentOSDistFile,
+				ParseFunc: parserFindSemanticVersion,
 			},
 		},
 		"/etc/redhat-release": {
@@ -49,7 +55,7 @@ func newDistMap() map[string][]distribution {
 		"/etc/os-release": {
 			{
 				Name:      "Amazon",
-				ParseFunc: parserFindEnvSemanticVersionKeys(),
+				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
 			},
 			{
 				Name:        "SUSE",
@@ -59,39 +65,44 @@ func newDistMap() map[string][]distribution {
 			{
 				Name:        "Debian",
 				SearchNames: []string{"Debian", "Raspbian"},
-				ParseFunc:   parserFindEnvSemanticVersionKeys(),
+				ParseFunc:   parserFindEnvSemanticVersionKeys(defaultKeys...),
 			},
 			{
 				Name: "Cumulus", Alias: "Cumulus Linux",
-				ParseFunc: parserFindEnvSemanticVersionKeys(),
+				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
 			},
 			{
 				Name: "Mint", Alias: "Linux Mint",
-				ParseFunc: parserFindEnvSemanticVersionKeys(),
+				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+			},
+			{
+
+				Name:      "CentOS",
+				ParseFunc: parseCentOSDistFile,
 			},
 			{
 				Name: "Uos", SearchNames: []string{"UOS", "Uos", "uos"},
-				ParseFunc: parserFindEnvSemanticVersionKeys(),
+				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
 			},
 			{
 				Name: "Deepin", SearchNames: []string{"Deepin", "deepin"},
-				ParseFunc: parserFindEnvSemanticVersionKeys(),
+				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
 			},
 			{
 				Name:      "Ubuntu",
-				ParseFunc: parserFindEnvSemanticVersionKeys(),
+				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
 			},
 			{
 				Name:      "Devuan",
-				ParseFunc: parserFindEnvSemanticVersionKeys(),
+				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
 			},
 			{
 				Name:      "Archlinux",
 				Alias:     "Arch Linux",
-				ParseFunc: parserFindEnvSemanticVersionKeys(),
+				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
 			},
 			{
-				ParseFunc: parserFindEnvNameAndSemanticVersionKeys("NAME"), // fallback
+				ParseFunc: parserFindEnvNameAndSemanticVersionKeys("NAME", defaultKeys...), // fallback
 			},
 		},
 		"/etc/system-release": {
@@ -120,7 +131,7 @@ func newDistMap() map[string][]distribution {
 		"/etc/lsb-release": {
 			{
 				Name:      "Debian",
-				ParseFunc: parserFindEnvSemanticVersionKeys(),
+				ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
 			},
 			{
 				Name:      "Mandriva",

@@ -1,10 +1,16 @@
 package distro
 
 import (
+	"fmt"
+
 	"github.com/jxsl13/osfacts/info"
 )
 
 func parseCentOSDistFile(dist distribution, filePath, fileContent string, osInfo *info.Os) error {
+	if filePath != "/etc/os-release" {
+		return fmt.Errorf("invalid path for parser: %s", filePath)
+	}
+
 	envMap, err := getEnvMap(fileContent)
 	if err != nil {
 		return err
