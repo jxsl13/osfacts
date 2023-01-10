@@ -49,7 +49,7 @@ func parseSuseReleaseDistFile(dist distribution, filePath, fileContent string, o
 	re := regexp.MustCompile(`\s*=\s*`)
 
 	for idx, line := range versionLines {
-		versionLines[idx] = strings.TrimSpace(re.ReplaceAllString(line, "="))
+		versionLines[idx] = re.ReplaceAllString(line, "=")
 	}
 	versionData := strings.Join(versionLines, "\n")
 

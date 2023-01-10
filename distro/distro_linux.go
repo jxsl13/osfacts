@@ -38,12 +38,14 @@ func newPaths() []distPath {
 					ParseFunc:   parserFindEnvSemanticVersionKeys(defaultKeys...),
 				},
 				{
-					Name: "Cumulus", Alias: "Cumulus Linux",
-					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+					Name:        "Cumulus Linux",
+					SearchNames: []string{"Cumulus"},
+					ParseFunc:   parserFindEnvSemanticVersionKeys(defaultKeys...),
 				},
 				{
-					Name: "Mint", Alias: "Linux Mint",
-					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+					Name:        "Linux Mint",
+					SearchNames: []string{"Mint"},
+					ParseFunc:   parserFindEnvSemanticVersionKeys(defaultKeys...),
 				},
 				{
 					Name:      "CentOS",
@@ -62,21 +64,19 @@ func newPaths() []distPath {
 					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
 				},
 				{
-					Name:        "OracleLinux",
-					SearchNames: []string{"Oracle Linux"},
-					ParseFunc:   parserFindEnvSemanticVersionKeys(defaultKeys...),
+					Name:      "Oracle Linux",
+					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
 				},
 				{
 					Name:      "Devuan",
 					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
 				},
 				{
-					Name:      "Archlinux",
-					Alias:     "Arch Linux",
-					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+					Name:      "Arch Linux",
+					ParseFunc: parserFindEnvVersionKey("BUILD_ID"),
 				},
 				{
-					Name:        "RedHat",
+					Name:        "RHEL",
 					SearchNames: []string{"Red Hat"},
 					ParseFunc:   parserFindEnvSemanticVersionKeys(defaultKeys...),
 				},
@@ -89,7 +89,7 @@ func newPaths() []distPath {
 			Path: "/etc/altlinux-release",
 			Dists: []distribution{
 				{
-					Name:        "Altlinux",
+					Name:        "ALT Linux",
 					SearchNames: []string{"ALT"},
 				}},
 		},
@@ -97,8 +97,7 @@ func newPaths() []distPath {
 			Path: "/etc/oracle-release",
 			Dists: []distribution{
 				{
-					Name:        "OracleLinux",
-					SearchNames: []string{"Oracle Linux"},
+					Name: "Oracle Linux",
 				},
 			},
 		},
@@ -152,8 +151,9 @@ func newPaths() []distPath {
 			Path: "/etc/alpine-release",
 			Dists: []distribution{
 				{
-					Name:      "Alpine",
-					ParseFunc: parserFindSemanticVersion,
+					Name:        "Alpine Linux",
+					SearchNames: []string{"Alpine"},
+					ParseFunc:   parserFindSemanticVersion,
 				},
 			},
 		},
@@ -208,7 +208,7 @@ func newPaths() []distPath {
 			Path: "/etc/redhat-release",
 			Dists: []distribution{
 				{
-					Name:        "RedHat",
+					Name:        "RHEL",
 					SearchNames: []string{"Red Hat"},
 					ParseFunc:   parserFindSemanticVersion,
 				},

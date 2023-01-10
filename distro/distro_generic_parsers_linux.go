@@ -52,3 +52,20 @@ func parserFindEnvNameAndSemanticVersionKeys(distNameKey string, versionKeys ...
 		return nil
 	}
 }
+
+func parserFindEnvVersionKey(versionKeys string) fileParseFunc {
+	return func(dist distribution, filePath, fileContent string, osInfo *info.Os) error {
+		envMap, err := getEnvMap(fileContent)
+		if err != nil {
+			return err
+		}
+
+		distVersion, err := getKey(envMap, versionKeys)
+		if err != nil {
+			return err
+		}
+
+		osInfo.Update(dist.InfoName(), distVersion)
+		return nil
+	}
+}

@@ -46,8 +46,8 @@ func Test_detectWithParams(t *testing.T) {
 		{
 			"/etc/SuSE-release",
 			`SUSE Linux Enterprise Server 10 (x86_64)
-			VERSION = 10
-			PATCHLEVEL = 4`,
+VERSION = 10
+PATCHLEVEL = 4`,
 			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "SLES", Version: "10.4"},
 			false,
 		},
@@ -91,7 +91,7 @@ ID_LIKE="suse"`,
 		{
 			"/etc/redhat-release",
 			`Red Hat Enterprise Linux Server release 6.10 (Santiago)`,
-			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "RedHat", Version: "6.10"},
+			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "RHEL", Version: "6.10"},
 			false,
 		},
 		{
@@ -113,7 +113,7 @@ ORACLE_BUGZILLA_PRODUCT="Oracle Linux 7"
 ORACLE_BUGZILLA_PRODUCT_VERSION=7.9
 ORACLE_SUPPORT_PRODUCT="Oracle Linux"
 ORACLE_SUPPORT_PRODUCT_VERSION=7.9`,
-			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "OracleLinux", Version: "7.9"},
+			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "Oracle Linux", Version: "7.9"},
 			false,
 		},
 		{
@@ -135,7 +135,23 @@ REDHAT_BUGZILLA_PRODUCT="Red Hat Enterprise Linux 8"
 REDHAT_BUGZILLA_PRODUCT_VERSION=8.7
 REDHAT_SUPPORT_PRODUCT="Red Hat Enterprise Linux"
 REDHAT_SUPPORT_PRODUCT_VERSION="8.7"`,
-			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "RedHat", Version: "8.7"},
+			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "RHEL", Version: "8.7"},
+			false,
+		},
+		{
+			"/etc/os-release",
+			`NAME="Arch Linux"
+PRETTY_NAME="Arch Linux"
+ID=arch
+BUILD_ID=rolling
+ANSI_COLOR="38;2;23;147;209"
+HOME_URL="https://archlinux.org/"
+DOCUMENTATION_URL="https://wiki.archlinux.org/"
+SUPPORT_URL="https://bbs.archlinux.org/"
+BUG_REPORT_URL="https://bugs.archlinux.org/"
+PRIVACY_POLICY_URL="https://terms.archlinux.org/docs/privacy-policy/"
+LOGO=archlinux-logo`,
+			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "Arch Linux", Version: "rolling"},
 			false,
 		},
 	}
@@ -147,6 +163,7 @@ REDHAT_SUPPORT_PRODUCT_VERSION="8.7"`,
 				return
 			}
 			assert.Equal(t, tt.want, *got)
+			t.Logf("%v", got)
 		})
 	}
 }
