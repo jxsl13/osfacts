@@ -1,9 +1,6 @@
 package distro
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/jxsl13/osfacts/info"
 )
 
@@ -51,19 +48,4 @@ func (o *distribution) Parse(filePath, fileContent string) (*info.Os, error) {
 		return nil, err
 	}
 	return osInfo, nil
-}
-
-func getFileContent(path string) (string, error) {
-	found, err := existsWithSize(path, false)
-	if err != nil {
-		return "", fmt.Errorf("%s: %w", path, err)
-	}
-	if !found {
-		return "", fmt.Errorf("%s: not found or empty", path)
-	}
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return "", fmt.Errorf("%s: %w", path, err)
-	}
-	return string(data), nil
 }

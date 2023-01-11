@@ -11,18 +11,11 @@ import (
 )
 
 var (
-	quoteReplacer = strings.NewReplacer(
-		`"`, "",
-		`'`, "",
-		`\\`, "",
-	)
 	ErrKeyNotFound       = errors.New("key not found")
 	ErrInvalidFileFormat = errors.New("invalid file format")
 )
 
-func stripQuotes(src string) string {
-	return quoteReplacer.Replace(src)
-}
+
 
 func unique[T comparable](values []T) []T {
 	m := make(map[T]struct{}, len(values))
@@ -149,4 +142,19 @@ func getEnvMap(content string) (map[string]string, error) {
 		return nil, fmt.Errorf("%w: %v", ErrInvalidFileFormat, err)
 	}
 	return envMap, nil
+}
+
+func getFileContent(path string) (string, error) {
+	found, err := existsWithSize(path, false)
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", path, err)
+	}
+	if !found {
+		return "", fmt.Errorf("%s: not found or empty", path)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", path, err)
+	}
+	return string(data), nil
 }
