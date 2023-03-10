@@ -75,12 +75,14 @@ func newPaths() []distPath {
 					ParseFunc: parseCentOSDistFile,
 				},
 				{
-					Name: "Uos", SearchNames: []string{"UOS", "Uos", "uos"},
-					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+					Name:        "Uos",
+					SearchNames: []string{"UOS", "Uos", "uos"},
+					ParseFunc:   parserFindEnvSemanticVersionKeys(defaultKeys...),
 				},
 				{
-					Name: "Deepin", SearchNames: []string{"Deepin", "deepin"},
-					ParseFunc: parserFindEnvSemanticVersionKeys(defaultKeys...),
+					Name:        "Deepin",
+					SearchNames: []string{"Deepin", "deepin"},
+					ParseFunc:   parserFindEnvSemanticVersionKeys(defaultKeys...),
 				},
 				{
 					Name:      "Ubuntu",
@@ -214,7 +216,8 @@ func newPaths() []distPath {
 			Path: "/etc/sourcemage-release",
 			Dists: []distribution{
 				{
-					Name: "SMGL", SearchNames: []string{"Source Mage GNU/Linux"},
+					Name:        "SMGL",
+					SearchNames: []string{"Source Mage GNU/Linux"},
 				},
 			},
 		},
