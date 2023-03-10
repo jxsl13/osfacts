@@ -1,3 +1,5 @@
+//go:build !aix
+
 package distro
 
 import (
@@ -14,21 +16,6 @@ var (
 	ErrKeyNotFound       = errors.New("key not found")
 	ErrInvalidFileFormat = errors.New("invalid file format")
 )
-
-
-
-func unique[T comparable](values []T) []T {
-	m := make(map[T]struct{}, len(values))
-	for _, v := range values {
-		m[v] = struct{}{}
-	}
-
-	result := make([]T, 0, len(m))
-	for k := range m {
-		result = append(result, k)
-	}
-	return result
-}
 
 func existsWithSize(filePath string, allowEmpty bool) (bool, error) {
 	fi, err := os.Stat(filePath)

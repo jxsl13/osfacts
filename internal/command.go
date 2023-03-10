@@ -1,4 +1,4 @@
-package common
+package internal
 
 import (
 	"os/exec"
@@ -18,7 +18,12 @@ func (c *Command) OutputLines() ([]string, error) {
 		return nil, err
 	}
 
-	return strings.Split(strings.TrimSpace(string(b)), "\n\r"), nil
+	lines := strings.Split(strings.TrimSpace(string(b)), "\n")
+	for i, line := range lines {
+		lines[i] = strings.TrimRight(line, "\r")
+	}
+
+	return lines, nil
 }
 
 func (c *Command) Output() ([]byte, error) {

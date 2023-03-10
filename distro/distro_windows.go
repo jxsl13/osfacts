@@ -3,11 +3,10 @@ package distro
 import (
 	"fmt"
 
-	"github.com/jxsl13/osfacts/info"
 	"golang.org/x/sys/windows/registry"
 )
 
-func detect() (*info.Os, error) {
+func detect() (*Info, error) {
 	k, err := registry.OpenKey(registry.LOCAL_MACHINE, `SOFTWARE\Microsoft\Windows NT\CurrentVersion`, registry.QUERY_VALUE)
 	if err != nil {
 		return nil, fmt.Errorf("failed to access registry: %w", err)
@@ -24,7 +23,7 @@ func detect() (*info.Os, error) {
 		patchLevelKey     = "UBR"
 	)
 
-	osInfo := info.NewOs()
+	osInfo := newInfo()
 
 	name, _, err := k.GetStringValue(productNameKey)
 	if err != nil {

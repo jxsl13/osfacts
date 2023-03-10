@@ -1,10 +1,6 @@
 package distro
 
-import (
-	"github.com/jxsl13/osfacts/info"
-)
-
-type fileParseFunc func(dist distribution, filePath, fileContent string, osInfo *info.Os) error
+type fileParseFunc func(dist distribution, filePath, fileContent string, osInfo *Info) error
 
 type distribution struct {
 	Name        string
@@ -30,7 +26,7 @@ func (o *distribution) InfoName() string {
 	return o.Name
 }
 
-func (o *distribution) Parse(filePath, fileContent string) (*info.Os, error) {
+func (o *distribution) Parse(filePath, fileContent string) (*Info, error) {
 	err := o.search(fileContent)
 	if err != nil {
 		return nil, err
@@ -41,11 +37,24 @@ func (o *distribution) Parse(filePath, fileContent string) (*info.Os, error) {
 		parser = o.ParseFunc
 	}
 
-	osInfo := info.NewOs()
+	osInfo := newInfo()
 
 	err = parser(*o, filePath, fileContent, osInfo)
 	if err != nil {
 		return nil, err
 	}
 	return osInfo, nil
+}
+
+func unique[T comparable](values []T) []T {
+	m := make(map[T]struct{}, len(values))
+	for _, v := range values {
+		m[v] = struct{}{}
+	}
+
+	result := make([]T, 0, len(m))
+	for k := range m {
+		result = append(result, k)
+	}
+	return result
 }

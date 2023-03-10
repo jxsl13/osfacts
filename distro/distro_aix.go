@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jxsl13/osfacts/common"
-	"github.com/jxsl13/osfacts/info"
+	"github.com/jxsl13/osfacts/internal"
 )
 
-func detect() (*info.Os, error) {
-	cmd, err := common.NewCommand("/usr/bin/oslevel")
+func detect() (*Info, error) {
+	cmd, err := internal.NewCommand("/usr/bin/oslevel")
 	if err != nil {
 		return nil, fmt.Errorf("%w: %v", ErrDetectionFailed, err)
 	}
@@ -17,7 +16,7 @@ func detect() (*info.Os, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%w: %v", ErrDetectionFailed, err)
 	}
-	osInfo := info.NewOs()
+	osInfo := newInfo()
 
 	osInfo.Version = strings.TrimSpace(output)
 	return osInfo, nil

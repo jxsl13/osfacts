@@ -1,6 +1,7 @@
+//go:build !aix
+
 package distro
 
-//build !aix
 import (
 	"errors"
 	"regexp"
@@ -13,7 +14,7 @@ var (
 	semverRegex        = regexp.MustCompile(semver.SemVerRegex)
 )
 
-func findSemanticVersion(content string) (string, error) {
+func findSemanticVersionString(content string) (string, error) {
 	version := ""
 	matches := semverRegex.FindAllString(content, -1)
 	if len(matches) == 0 {

@@ -3,11 +3,9 @@ package distro
 import (
 	"fmt"
 	"strings"
-
-	"github.com/jxsl13/osfacts/info"
 )
 
-func parseFallbackDistFile(dist distribution, filePath, fileContent string, osInfo *info.Os) error {
+func parseFallbackDistFile(dist distribution, filePath, fileContent string, osInfo *Info) error {
 
 	m, err := getEnvMap(fileContent)
 	if err == nil {
@@ -15,14 +13,14 @@ func parseFallbackDistFile(dist distribution, filePath, fileContent string, osIn
 		if err == nil {
 			version, err := findEnvSemanticVersionInMap(m)
 			if err == nil {
-				osInfo.Update(name, version)
+				osInfo.update(name, version)
 				return nil
 			} else {
-				version, err := findSemanticVersion(fileContent)
+				version, err := findSemanticVersionString(fileContent)
 				if err != nil {
 					return err
 				}
-				osInfo.Update(name, version)
+				osInfo.update(name, version)
 				return nil
 			}
 		} else {
@@ -38,14 +36,14 @@ func parseFallbackDistFile(dist distribution, filePath, fileContent string, osIn
 
 			version, err := findEnvSemanticVersionInMap(m)
 			if err == nil {
-				osInfo.Update(name, version)
+				osInfo.update(name, version)
 				return nil
 			} else {
-				version, err := findSemanticVersion(fileContent)
+				version, err := findSemanticVersionString(fileContent)
 				if err != nil {
 					return err
 				}
-				osInfo.Update(name, version)
+				osInfo.update(name, version)
 				return nil
 			}
 		}
@@ -60,11 +58,11 @@ func parseFallbackDistFile(dist distribution, filePath, fileContent string, osIn
 			return fmt.Errorf("%w: unexpected first line: %s", ErrInvalidFileFormat, filePath)
 		}
 
-		version, err := findSemanticVersion(fileContent)
+		version, err := findSemanticVersionString(fileContent)
 		if err != nil {
 			return err
 		}
-		osInfo.Update(name, version)
+		osInfo.update(name, version)
 		return nil
 	}
 }

@@ -2,9 +2,32 @@ package distro
 
 import (
 	"fmt"
-
-	"github.com/jxsl13/osfacts/info"
 )
+
+func detect() (*Info, error) {
+
+	for _, distPath := range newPaths() {
+		exists, err := existsWithSize(distPath.Path, false)
+		if !exists || err != nil {
+			continue
+		}
+
+		fileContent, err := getFileContent(distPath.Path)
+		if err != nil {
+			return nil, fmt.Errorf("failed to open %s: %w", distPath.Path, err)
+		}
+
+		for _, dist := range distPath.Dists {
+			osInfo, err := dist.Parse(distPath.Path, fileContent)
+			if err != nil {
+				continue
+			}
+			return osInfo, nil
+		}
+	}
+
+	return nil, ErrDetectionFailed
+}
 
 // where could we use this distribution family
 // https://github.com/ansible/ansible/blob/devel/lib/ansible/module_utils/facts/system/distribution.py#L512-L536
@@ -215,29 +238,4 @@ func newPaths() []distPath {
 			},
 		},
 	}
-}
-
-func detect() (*info.Os, error) {
-
-	for _, distPath := range newPaths() {
-		exists, err := existsWithSize(distPath.Path, false)
-		if !exists || err != nil {
-			continue
-		}
-
-		fileContent, err := getFileContent(distPath.Path)
-		if err != nil {
-			return nil, fmt.Errorf("failed to open %s: %w", distPath.Path, err)
-		}
-
-		for _, dist := range distPath.Dists {
-			osInfo, err := dist.Parse(distPath.Path, fileContent)
-			if err != nil {
-				continue
-			}
-			return osInfo, nil
-		}
-	}
-
-	return nil, ErrDetectionFailed
 }

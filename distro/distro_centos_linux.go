@@ -2,11 +2,9 @@ package distro
 
 import (
 	"fmt"
-
-	"github.com/jxsl13/osfacts/info"
 )
 
-func parseCentOSDistFile(dist distribution, filePath, fileContent string, osInfo *info.Os) error {
+func parseCentOSDistFile(dist distribution, filePath, fileContent string, osInfo *Info) error {
 	if filePath != "/etc/os-release" {
 		return fmt.Errorf("invalid path for parser: %s", filePath)
 	}
@@ -36,6 +34,6 @@ func parseCentOSDistFile(dist distribution, filePath, fileContent string, osInfo
 		return err
 	}
 
-	osInfo.Update(distName, version)
+	osInfo.update(distName, version)
 	return nil
 }

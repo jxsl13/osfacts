@@ -5,11 +5,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/jxsl13/osfacts/info"
 	"golang.org/x/sys/unix"
 )
 
-func detect() (*info.Os, error) {
+func detect() (*Info, error) {
 	fileContent, err := getFileContent("/etc/release")
 	if err != nil {
 		return nil, err
@@ -75,25 +74,18 @@ func detect() (*info.Os, error) {
 			return nil, fmt.Errorf("%w: version not found", ErrDetectionFailed)
 		}
 
-		version, err = findSemanticVersion(versionString)
+		version, err = findSemanticVersionString(versionString)
 		if err != nil {
 			return nil, fmt.Errorf("%w: version not found: %v", ErrDetectionFailed, err)
 		}
 	default:
 		// "SmartOS", "OpenIndiana", "OmniOS", "Solaris", "Nexenta"
 
-		version, err = findSemanticVersion(firstLine)
+		version, err = findSemanticVersionString(firstLine)
 		if err != nil {
 			return nil, fmt.Errorf("%w: version not found: %v", ErrDetectionFailed, err)
 		}
 	}
 
-	fmt.Println("Nodename: ", string(utsName.Nodename[:]))
-	fmt.Println("Release: ", string(utsName.Release[:]))
-	fmt.Println("Version: ", string(utsName.Version[:]))
-	fmt.Println("Machine: ", string(utsName.Machine[:]))
-
-	osInfo := info.NewOs()
-	osInfo.Update(distName, version)
-	return osInfo, nil
+	return newInfo().update(distName, version), nil
 }

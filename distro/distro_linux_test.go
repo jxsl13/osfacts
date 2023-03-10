@@ -5,11 +5,10 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/jxsl13/osfacts/info"
 	"github.com/stretchr/testify/assert"
 )
 
-func detectWithParams(filePath, fileContent string) (*info.Os, error) {
+func detectWithParams(filePath, fileContent string) (*Info, error) {
 	distPaths := newPaths()
 
 	found := false
@@ -40,7 +39,7 @@ func Test_detectWithParams(t *testing.T) {
 	tests := []struct {
 		filePath    string
 		fileContent string
-		want        info.Os
+		want        Info
 		wantErr     bool
 	}{
 		{
@@ -48,7 +47,7 @@ func Test_detectWithParams(t *testing.T) {
 			`SUSE Linux Enterprise Server 10 (x86_64)
 VERSION = 10
 PATCHLEVEL = 4`,
-			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "SLES", Version: "10.4"},
+			Info{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "SLES", Version: "10.4"},
 			false,
 		},
 		{
@@ -57,7 +56,7 @@ PATCHLEVEL = 4`,
 ID=alpine
 VERSION_ID=3.16.2
 PRETTY_NAME="Alpine Linux v3.16"`,
-			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "Alpine Linux", Version: "3.16.2"},
+			Info{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "Alpine Linux", Version: "3.16.2"},
 			false,
 		},
 		{
@@ -68,13 +67,13 @@ VERSION="20.04.5 LTS (Focal Fossa)"
 VERSION_ID="20.04"
 ID_LIKE=debian
 PRETTY_NAME="Ubuntu 20.04.5 LTS"`,
-			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "Ubuntu", Version: "20.04.5"},
+			Info{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "Ubuntu", Version: "20.04.5"},
 			false,
 		},
 		{
 			"/etc/centos-release",
 			`CentOS release 6.10 (Final)`,
-			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "CentOS", Version: "6.10"},
+			Info{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "CentOS", Version: "6.10"},
 			false,
 		},
 		{
@@ -85,13 +84,13 @@ VERSION_ID="15.3"
 PRETTY_NAME="SUSE Linux Enterprise Server 15 SP3"
 ID="sles"
 ID_LIKE="suse"`,
-			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "SLES", Version: "15.3"},
+			Info{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "SLES", Version: "15.3"},
 			false,
 		},
 		{
 			"/etc/redhat-release",
 			`Red Hat Enterprise Linux Server release 6.10 (Santiago)`,
-			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "RHEL", Version: "6.10"},
+			Info{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "RHEL", Version: "6.10"},
 			false,
 		},
 		{
@@ -113,7 +112,7 @@ ORACLE_BUGZILLA_PRODUCT="Oracle Linux 7"
 ORACLE_BUGZILLA_PRODUCT_VERSION=7.9
 ORACLE_SUPPORT_PRODUCT="Oracle Linux"
 ORACLE_SUPPORT_PRODUCT_VERSION=7.9`,
-			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "Oracle Linux", Version: "7.9"},
+			Info{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "Oracle Linux", Version: "7.9"},
 			false,
 		},
 		{
@@ -135,7 +134,7 @@ REDHAT_BUGZILLA_PRODUCT="Red Hat Enterprise Linux 8"
 REDHAT_BUGZILLA_PRODUCT_VERSION=8.7
 REDHAT_SUPPORT_PRODUCT="Red Hat Enterprise Linux"
 REDHAT_SUPPORT_PRODUCT_VERSION="8.7"`,
-			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "RHEL", Version: "8.7"},
+			Info{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "RHEL", Version: "8.7"},
 			false,
 		},
 		{
@@ -151,7 +150,7 @@ SUPPORT_URL="https://bbs.archlinux.org/"
 BUG_REPORT_URL="https://bugs.archlinux.org/"
 PRIVACY_POLICY_URL="https://terms.archlinux.org/docs/privacy-policy/"
 LOGO=archlinux-logo`,
-			info.Os{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "Arch Linux", Version: "rolling"},
+			Info{Family: runtime.GOOS, Arch: runtime.GOARCH, Distribution: "Arch Linux", Version: "rolling"},
 			false,
 		},
 	}

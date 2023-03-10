@@ -6,11 +6,9 @@ import (
 	"os"
 	"regexp"
 	"strings"
-
-	"github.com/jxsl13/osfacts/info"
 )
 
-func parseSuseReleaseDistFile(dist distribution, filePath, fileContent string, osInfo *info.Os) error {
+func parseSuseReleaseDistFile(dist distribution, filePath, fileContent string, osInfo *Info) error {
 
 	if filePath != "/etc/SuSE-release" {
 		return errors.New("invalid SUSE release path")
@@ -57,11 +55,11 @@ func parseSuseReleaseDistFile(dist distribution, filePath, fileContent string, o
 	if err != nil {
 		// look inside of the whole file for a semantic version
 		// in case we could not parse key/value pairs
-		version, err := findSemanticVersion(fileContent)
+		version, err := findSemanticVersionString(fileContent)
 		if err != nil {
 			return err
 		}
-		osInfo.Update(distName, version)
+		osInfo.update(distName, version)
 		return nil
 	}
 
@@ -70,14 +68,14 @@ func parseSuseReleaseDistFile(dist distribution, filePath, fileContent string, o
 	if !foundVersion || !foundPatchLevel {
 		// look inside of the whole file for a semantiv version
 		// in case we could not find out expected key names
-		version, err := findSemanticVersion(fileContent)
+		version, err := findSemanticVersionString(fileContent)
 		if err != nil {
 			return err
 		}
-		osInfo.Update(distName, version)
+		osInfo.update(distName, version)
 		return nil
 	}
 
-	osInfo.Update(distName, fmt.Sprintf("%s.%s", version, patchLevel))
+	osInfo.update(distName, fmt.Sprintf("%s.%s", version, patchLevel))
 	return nil
 }
