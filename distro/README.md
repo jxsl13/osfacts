@@ -1,15 +1,16 @@
-# distro
 
+# `distro`package
 
 This package supports detecting different os families, architectures, distributions and distribution versions.
 
 ## supportes OS families
+The `distro` package supports these families and detecting their distro (or os) version.
 
-- aix
-- darwin
-- linux
-- solaris
-- windows
+- aix (does not have distributions)
+- darwin (different os names depending on version)
+- linux (see below)
+- solaris (see below)
+- windows 
 
 ## supported `linux` distributions
 
