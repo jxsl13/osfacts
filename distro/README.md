@@ -1,5 +1,5 @@
 
-# `distro`package
+# `distro` package
 
 This package supports detecting different os families, architectures, distributions and distribution versions.
 

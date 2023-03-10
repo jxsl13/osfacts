@@ -39,7 +39,7 @@ This prevents us from running on pretty old operating systems like SLES 10 and o
 - SLES >= 11
 
 
-## `distro`package
+## `distro` package
 
 This package supports detecting different os families, architectures, distributions and distribution versions.
 
